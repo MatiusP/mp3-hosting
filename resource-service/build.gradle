@@ -1,2 +1,5 @@
 dependencies {
+    implementation 'org.apache.tika:tika-core:3.0.0'
+    implementation 'org.apache.tika:tika-parsers-standard-package:3.0.0'
+
 }
