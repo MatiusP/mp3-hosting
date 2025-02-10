@@ -3,19 +3,38 @@ package com.epam.pratsko.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.epam.pratsko.exception.ExceptionConstants.INTERNAL_SERVER_ERROR;
 
 @RestControllerAdvice
 @Slf4j
-public class GlobalExceptionHandler {
+public class SongExceptionHandler {
 
-    @ExceptionHandler(ResourceParseException.class)
-    public ResponseEntity<?> handleResourceParseException(ResourceParseException e) {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException e) {
+        log.error(e.getMessage(), e);
+        Map<String, String> errors = new HashMap<>();
+        e.getBindingResult().getAllErrors().forEach(error -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        errors.put("errorCode", String.valueOf(HttpStatus.BAD_REQUEST.value()));
+        return ResponseEntity.badRequest().body(errors);
+    }
+
+    @ExceptionHandler(SongValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<?> handleSongValidationExceptions(SongValidationException e) {
         log.error(e.getMessage(), e);
         return ResponseEntity.badRequest()
                 .body(Map.of(
@@ -24,18 +43,20 @@ public class GlobalExceptionHandler {
                 );
     }
 
-    @ExceptionHandler(ResourceValidationException.class)
-    public ResponseEntity<?> handleValidationException(ResourceValidationException e) {
+    @ExceptionHandler(SongExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<?> handleSongExistsException(SongExistsException e) {
         log.error(e.getMessage(), e);
-        return ResponseEntity.badRequest()
+        return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(Map.of(
                         "error message", e.getMessage(),
-                        "errorCode", HttpStatus.BAD_REQUEST.value())
+                        "errorCode", HttpStatus.CONFLICT.value())
                 );
     }
 
-    @ExceptionHandler(ProcessResourceException.class)
-    public ResponseEntity<?> handleProcessResourceException(ProcessResourceException e) {
+    @ExceptionHandler(SongNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<?> handleSongNotFoundException(SongNotFoundException e) {
         log.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(Map.of(
@@ -63,4 +84,5 @@ public class GlobalExceptionHandler {
                         "errorCode", HttpStatus.BAD_REQUEST.value())
                 );
     }
+
 }
