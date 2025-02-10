@@ -4,7 +4,7 @@ import com.epam.pratsko.exception.ResourceValidationException;
 
 import java.util.List;
 
-import static com.epam.pratsko.exception.ExceptionConstants.INVALID_ID;
+import static com.epam.pratsko.exception.ErrorMessages.INVALID_ID;
 
 public class Validator {
 
@@ -18,12 +18,15 @@ public class Validator {
     }
 
     public static List<Long> validateListResourceIds(List<String> resourceId) {
-        if (resourceId.size() > 200) {
+        List<Long> validatedIds = resourceId.stream()
+                .map(Validator::validateAndCastResourceId)
+                .toList();
+        StringBuilder sb = new StringBuilder();
+        validatedIds.forEach(sb::append);
+        if ((sb.length() + resourceId.size() - 1) > 200) {
             throw new ResourceValidationException("The number of resources to delete should not exceed 200.");
         }
 
-        return resourceId.stream()
-                .map(Validator::validateAndCastResourceId)
-                .toList();
+        return validatedIds;
     }
 }

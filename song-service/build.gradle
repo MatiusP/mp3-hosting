@@ -1,2 +1,9 @@
+bootJar {
+    mainClass = 'com.epam.pratsko.SongService'
+}
+
 dependencies {
+    implementation 'jakarta.validation:jakarta.validation-api:3.1.0'
+    implementation 'org.mapstruct:mapstruct:1.6.3'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
 }

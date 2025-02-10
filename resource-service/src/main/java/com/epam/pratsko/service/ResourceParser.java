@@ -14,7 +14,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static com.epam.pratsko.exception.ExceptionConstants.INVALID_MP3;
+import static com.epam.pratsko.exception.ErrorMessages.INVALID_MP3;
 
 @Service
 public class ResourceParser {

@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/resource_service
+    url: jdbc:postgresql://localhost:5432/song_service
     username: admin
     password: admin
     driver-class-name: org.postgresql.Driver
@@ -13,8 +13,4 @@ spring:
       show-sql: true
 
 server:
-  port: 8071
-
-song:
-  service:
-    url: http://localhost:8072
+  port: 8072

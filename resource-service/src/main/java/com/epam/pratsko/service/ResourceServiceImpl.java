@@ -17,21 +17,18 @@ public class ResourceServiceImpl implements ResourceService {
 
     private final ResourceRepository repository;
     private final ResourceParser parser;
+    private final SendService sendService;
 
     @Override
     public Long processResource(byte[] resource) {
         Metadata metadata = extractMetadataFrom(resource);
-        sendMetadataToSongService(metadata);
-        return uploadResource(resource);
+        Long resourceId = uploadResource(resource);
+        sendService.sendCreateRequest(resourceId, metadata);
+        return resourceId;
     }
 
     private Metadata extractMetadataFrom(byte[] resource) {
         return parser.extractMetadata(resource);
-    }
-
-    private void sendMetadataToSongService(Metadata metadata) {
-        //FIXME: implement sending metadata to song service
-
     }
 
     private Long uploadResource(byte[] resource) {
@@ -57,6 +54,9 @@ public class ResourceServiceImpl implements ResourceService {
                 .map(ResourceEntity::getId)
                 .toList();
         repository.deleteAll(resourcesToDelete);
+//        if (!deletedIds.isEmpty()) {
+//            sendService.sendDeleteRequest(deletedIds);
+//        }
         return deletedIds;
     }
 
