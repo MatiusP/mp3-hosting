@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.epam.pratsko.exception.ExceptionConstants.SONG_EXISTS_ERROR;
-import static com.epam.pratsko.exception.ExceptionConstants.SONG_NOT_FOUND_ERROR;
+import static com.epam.pratsko.exception.ErrorMessages.SONG_EXISTS_ERROR;
+import static com.epam.pratsko.exception.ErrorMessages.SONG_NOT_FOUND_ERROR;
 
 @Service
 @RequiredArgsConstructor

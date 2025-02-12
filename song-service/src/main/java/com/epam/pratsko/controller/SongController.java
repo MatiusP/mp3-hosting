@@ -25,7 +25,7 @@ public class SongController {
     private final SongService songService;
 
     @PostMapping
-    public ResponseEntity<?> save(@Valid @RequestBody SongDto songDto) {
+    public ResponseEntity<Map<String, Long>> save(@Valid @RequestBody SongDto songDto) {
         long id = songService.save(songDto);
         return ResponseEntity.ok(Map.of("id", id));
     }
@@ -36,7 +36,7 @@ public class SongController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> delete(@RequestParam("id") List<String> ids) {
+    public ResponseEntity<Map<String, List<Long>>> delete(@RequestParam("id") List<String> ids) {
         List<Long> deletedResourceIds = songService.delete(ids);
         return ResponseEntity.ok().body(Map.of("ids", deletedResourceIds));
     }

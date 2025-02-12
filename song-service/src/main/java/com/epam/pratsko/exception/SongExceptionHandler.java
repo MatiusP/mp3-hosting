@@ -6,83 +6,65 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.epam.pratsko.exception.ExceptionConstants.INTERNAL_SERVER_ERROR;
+import static com.epam.pratsko.exception.ErrorMessages.GENERAL_VALIDATION_ERROR;
+import static com.epam.pratsko.exception.ErrorMessages.INTERNAL_SERVER_ERROR;
 
 @RestControllerAdvice
 @Slf4j
 public class SongExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException e) {
+    public ResponseEntity<SongErrorResponse> handleValidationExceptions(MethodArgumentNotValidException e) {
         log.error(e.getMessage(), e);
-        Map<String, String> errors = new HashMap<>();
+
+        Map<String, String> details = new HashMap<>();
         e.getBindingResult().getAllErrors().forEach(error -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
+            details.put(fieldName, errorMessage);
         });
-        errors.put("errorCode", String.valueOf(HttpStatus.BAD_REQUEST.value()));
-        return ResponseEntity.badRequest().body(errors);
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new SongErrorResponse(GENERAL_VALIDATION_ERROR, String.valueOf(HttpStatus.BAD_REQUEST.value()), details));
     }
 
     @ExceptionHandler(SongValidationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<?> handleSongValidationExceptions(SongValidationException e) {
+    public ResponseEntity<SongErrorResponse> handleSongValidationExceptions(SongValidationException e) {
         log.error(e.getMessage(), e);
-        return ResponseEntity.badRequest()
-                .body(Map.of(
-                        "error message", e.getMessage(),
-                        "errorCode", HttpStatus.BAD_REQUEST.value())
-                );
+        Map<String, String> details = Map.of("error cause", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new SongErrorResponse(GENERAL_VALIDATION_ERROR, String.valueOf(HttpStatus.BAD_REQUEST.value()), details));
     }
 
     @ExceptionHandler(SongExistsException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ResponseEntity<?> handleSongExistsException(SongExistsException e) {
+    public ResponseEntity<SongErrorResponse> handleSongExistsException(SongExistsException e) {
         log.error(e.getMessage(), e);
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(Map.of(
-                        "error message", e.getMessage(),
-                        "errorCode", HttpStatus.CONFLICT.value())
-                );
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new SongErrorResponse(e.getMessage(), String.valueOf(HttpStatus.CONFLICT.value()), Map.of()));
     }
 
     @ExceptionHandler(SongNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<?> handleSongNotFoundException(SongNotFoundException e) {
+    public ResponseEntity<SongErrorResponse> handleSongNotFoundException(SongNotFoundException e) {
         log.error(e.getMessage(), e);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of(
-                        "error message", e.getMessage(),
-                        "errorCode", HttpStatus.NOT_FOUND.value())
-                );
-    }
-
-    @ExceptionHandler(NumberFormatException.class)
-    public ResponseEntity<?> handleNumberFormatException(NumberFormatException e) {
-        log.error(e.getMessage(), e);
-        return ResponseEntity.badRequest()
-                .body(Map.of(
-                        "error message", e.getMessage(),
-                        "errorCode", HttpStatus.BAD_REQUEST.value())
-                );
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new SongErrorResponse(e.getMessage(), String.valueOf(HttpStatus.NOT_FOUND.value()), Map.of()));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleException(Exception e) {
+    public ResponseEntity<SongErrorResponse> handleException(Exception e) {
         log.error(e.getMessage(), e);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of(
-                        "error message", INTERNAL_SERVER_ERROR,
-                        "errorCode", HttpStatus.BAD_REQUEST.value())
-                );
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new SongErrorResponse(INTERNAL_SERVER_ERROR, String.valueOf(HttpStatus.BAD_REQUEST.value()), Map.of()));
     }
 
 }

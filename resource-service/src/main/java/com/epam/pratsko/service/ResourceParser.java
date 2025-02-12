@@ -14,16 +14,14 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static com.epam.pratsko.exception.ErrorMessages.INVALID_MP3;
+import static com.epam.pratsko.exception.ErrorMessages.INVALID_MP3_ERROR;
 
 @Service
 public class ResourceParser {
 
-    private static final String MP3_CONTENT_TYPE = "audio/mpeg";
-
     public Metadata extractMetadata(byte[] resourceContent) {
         if (!isResourceValid(resourceContent)) {
-            throw new ResourceParseException(INVALID_MP3);
+            throw new ResourceParseException(INVALID_MP3_ERROR);
         }
 
         Metadata metadata = new Metadata();
@@ -31,17 +29,18 @@ public class ResourceParser {
             BodyContentHandler handler = new BodyContentHandler();
             new Mp3Parser().parse(inputstream, handler, metadata, new ParseContext());
         } catch (IOException | TikaException | SAXException e) {
-            throw new ResourceParseException(INVALID_MP3);
+            throw new ResourceParseException(INVALID_MP3_ERROR);
         }
         return metadata;
     }
 
     private boolean isResourceValid(byte[] resourceContent) {
+        String mp3ContentType = "audio/mpeg";
         if (resourceContent.length == 0) {
-            throw new ResourceParseException(INVALID_MP3);
+            throw new ResourceParseException(INVALID_MP3_ERROR);
         }
 
-        return MP3_CONTENT_TYPE.equals(new Tika().detect(resourceContent));
+        return mp3ContentType.equals(new Tika().detect(resourceContent));
     }
 
 }

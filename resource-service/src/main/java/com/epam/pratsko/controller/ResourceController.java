@@ -24,7 +24,7 @@ public class ResourceController {
     private final ResourceService resourceService;
 
     @PostMapping
-    public ResponseEntity<?> upload(HttpServletRequest request) throws IOException {
+    public ResponseEntity<Map<String, Long>> upload(HttpServletRequest request) throws IOException {
         byte[] fileContent = request.getInputStream().readAllBytes();
         long id = resourceService.processResource(fileContent);
         return ResponseEntity.ok(Map.of("id", id));
@@ -39,7 +39,7 @@ public class ResourceController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> delete(@RequestParam("id") List<String> ids) {
+    public ResponseEntity<Map<String, List<Long>>> delete(@RequestParam("id") List<String> ids) {
         List<Long> deletedResourceIds = resourceService.delete(ids);
         return ResponseEntity.ok().body(Map.of("ids", deletedResourceIds));
     }

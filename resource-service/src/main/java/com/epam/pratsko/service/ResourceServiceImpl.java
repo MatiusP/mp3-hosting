@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.epam.pratsko.exception.ErrorMessages.RESOURCE_NOT_FOUND_ERROR;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -43,7 +45,7 @@ public class ResourceServiceImpl implements ResourceService {
 
         return repository.findById(receivedId)
                 .map(ResourceEntity::getContent)
-                .orElseThrow(() -> new ProcessResourceException("The provided ID is invalid."));
+                .orElseThrow(() -> new ProcessResourceException(String.format(RESOURCE_NOT_FOUND_ERROR, id)));
     }
 
     @Override
