@@ -1,16 +1,17 @@
 spring:
   datasource:
-    url: jdbc:postgresql://${SONG_DB_HOST:localhost}:${SONG_DB_PORT:5432}/${SONG_DB_NAME:song_service}
-    username: ${DB_USERNAME:admin}
-    password: ${DB_PASSWORD:admin}
+    url: ${SONG_DB_URL:jdbc:postgresql://localhost:5433/song_db}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
   jpa:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
-      show-sql: true
+      ddl-auto: none
+    flyway:
+      enabled: false
 
 server:
   port: ${SONG_SERVER_PORT:8082}
