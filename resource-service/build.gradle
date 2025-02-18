@@ -1,5 +1,17 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
 bootJar {
     mainClass = 'com.epam.pratsko.ResourceService'
+}
+
+jar {
+    enabled = false
 }
 
 dependencies {

@@ -7,6 +7,8 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - "5434:5432"
+    networks:
+      - mp3-hosting
 
   song-db:
     image: postgres:17-alpine
@@ -16,3 +18,9 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - "5433:5432"
+    networks:
+      - mp3-hosting
+
+networks:
+  mp3-hosting:
+    driver: bridge
