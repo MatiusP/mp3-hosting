@@ -18,4 +18,4 @@ server:
 
 song:
   service:
-    url: http://${SONG_SERVICE_HOST:localhost}:${SONG_SERVICE_PORT:8082}
+    url: http://${GATEWAY_SERVICE_HOST:localhost}:${GATEWAY_SERVICE_PORT:8082}

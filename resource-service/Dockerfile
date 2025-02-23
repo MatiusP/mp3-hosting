@@ -2,9 +2,11 @@
 FROM gradle:8.12.1-jdk17-alpine AS build
 WORKDIR /app
 
-COPY build.gradle settings.gradle gradlew ./
+COPY build.gradle settings.gradle gradle.properties gradlew ./
 COPY resource-service/build.gradle resource-service/
 COPY gradle/wrapper/ gradle/wrapper/
+
+VOLUME /home/gradle/.gradle
 
 RUN chmod +x gradlew && ./gradlew :resource-service:dependencies --no-daemon
 
@@ -22,4 +24,4 @@ COPY --from=build /app/resource-service/build/libs/*.jar app.jar
 
 EXPOSE 8071
 
-CMD ["sh", "-c", "java -jar app.jar --server.port=${RESOURCE_SERVER_PORT:-8071}"]
+CMD ["sh", "-c", "java -jar app.jar --server.port=${RESOURCE_SERVICE_PORT:-8071}"]

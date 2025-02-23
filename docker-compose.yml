@@ -40,8 +40,8 @@ services:
       SPRING_DATASOURCE_URL: ${RESOURCE_DB_URL}
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-      SONG_SERVICE_HOST: ${SONG_SERVICE_HOST}
-      SONG_SERVICE_PORT: ${SONG_SERVICE_PORT}
+      GATEWAY_SERVICE_HOST: ${GATEWAY_SERVICE_HOST}
+      GATEWAY_SERVICE_PORT: ${GATEWAY_SERVICE_PORT}
     networks:
       - default
     depends_on:
@@ -63,3 +63,19 @@ services:
       - default
     depends_on:
       - song-db
+
+  gateway-service:
+    build:
+      context: .
+      dockerfile: gateway-service/Dockerfile
+    container_name: gateway-service
+    ports:
+      - "8080:8080"
+    environment:
+      RESOURCE_SERVICE_URL: ${RESOURCE_SERVICE_URL}
+      SONG_SERVICE_URL: ${SONG_SERVICE_URL}
+    networks:
+      - default
+    depends_on:
+      - resource-service
+      - song-service

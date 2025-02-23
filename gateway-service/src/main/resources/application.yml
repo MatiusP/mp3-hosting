@@ -1,0 +1,15 @@
+server:
+  port: ${GATEWAY_SERVICE_PORT:8090}
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: resource-service
+          uri: ${RESOURCE_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/resources/**
+        - id: song-service
+          uri: ${SONG_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/songs/**
