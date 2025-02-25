@@ -2,4 +2,5 @@ rootProject.name = 'mp3-hosting'
 include 'resource-service'
 include 'song-service'
 include 'gateway-service'
+include 'discovery-service'
 
