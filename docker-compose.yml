@@ -40,26 +40,67 @@ services:
       SPRING_DATASOURCE_URL: ${RESOURCE_DB_URL}
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-      SONG_SERVICE_HOST: ${SONG_SERVICE_HOST}
-      SONG_SERVICE_PORT: ${SONG_SERVICE_PORT}
+      GATEWAY_SERVICE_HOST: ${GATEWAY_SERVICE_HOST}
+      GATEWAY_SERVICE_PORT: ${GATEWAY_SERVICE_PORT}
+      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
     networks:
       - default
     depends_on:
       - resource-db
       - song-service
+      - discovery-service
 
   song-service:
     build:
       context: .
       dockerfile: song-service/Dockerfile
-    container_name: song-service
-    ports:
-      - "8072:8072"
+#    ports:
+#      - "8072:8072"
+#      - "8073:8072"
     environment:
       SPRING_DATASOURCE_URL: ${SONG_DB_URL}
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+      SERVER_PORT: 8072
     networks:
       - default
     depends_on:
       - song-db
+      - discovery-service
+    deploy:
+      replicas: 2
+    ports:
+      - "8072"
+      - "8073"
+
+  gateway-service:
+    build:
+      context: .
+      dockerfile: gateway-service/Dockerfile
+    container_name: gateway-service
+    ports:
+      - "8080:8080"
+    environment:
+      RESOURCE_SERVICE_URL: ${RESOURCE_SERVICE_URL}
+      SONG_SERVICE_URL: ${SONG_SERVICE_URL}
+      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+    networks:
+      - default
+    depends_on:
+      - resource-service
+      - song-service
+      - discovery-service
+
+  discovery-service:
+    build:
+      context: .
+      dockerfile: discovery-service/Dockerfile
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
+    environment:
+      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+    networks:
+      - default
